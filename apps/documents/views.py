@@ -8,11 +8,14 @@ from apps.documents.models import Document
 from apps.documents import serializers
 from apps.documents.utils import SupabaseStorage, get_pdf_metadata
 from apps.documents.tasks import process_pdf
+from apps.users.models import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
-    # permission_classes = [permissions.IsAuthenticated] # Uncomment if you want to enforce authentication
 
     @extend_schema(
         request={
@@ -22,11 +25,22 @@ class DocumentUploadView(APIView):
         description="Upload a PDF document. Only the 'file' field is required.",
     )
     def post(self, request, *args, **kwargs):
+        logger.info("File upload")
         serializer = serializers.DocumentUploadSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         file_obj = serializer.validated_data["file"]
+
+        user_id = serializer.validated_data["user_id"]
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # Opción A: Error de validación (400 Bad Request)
+            return Response(
+                {"user_id": "El usuario con este ID no existe."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # 1. Validation (already partially done by serializer, but keeping explicit checks)
         if file_obj.size > 50 * 1024 * 1024:
@@ -56,9 +70,8 @@ class DocumentUploadView(APIView):
             public_url = storage.upload_file(
                 file_content, storage_filename, file_obj.content_type
             )
-
+            logger.info(f"File uploaded to Supabase: {public_url}")
             # 4. Save to Database
-            user_id = serializer.validated_data["user_id"]
             document = Document.objects.create(
                 url=public_url,
                 name=file_obj.name,
@@ -67,7 +80,7 @@ class DocumentUploadView(APIView):
                 r2_key=f"documents/{storage_filename}",
                 hash_md5=metadata["hash_md5"],
                 num_pages=metadata["num_pages"],
-                user_id=user_id,
+                user=user,
             )
             process_pdf.delay(document.id)
 

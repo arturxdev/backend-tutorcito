@@ -4,8 +4,8 @@ from apps.users.models import User
 
 
 class Exam(models.Model):
-    document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     page_start = models.IntegerField()
     page_end = models.IntegerField()
     status = models.CharField(
@@ -21,13 +21,11 @@ class Exam(models.Model):
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.document_id} - {self.user_id} ({self.status})"
+        return f"{self.document} - {self.user} ({self.status})"
 
 
 class Question(models.Model):
-    exam_id = models.ForeignKey(
-        Exam, on_delete=models.CASCADE, related_name="questions"
-    )
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="questions")
     question = models.TextField()
     options = models.JSONField()
     difficulty = models.CharField(
@@ -46,8 +44,8 @@ class Question(models.Model):
 
 
 class Result(models.Model):
-    document_id = models.ForeignKey(Document, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     feedback = models.TextField()
     created_at = models.DateField(auto_now_add=True)
 

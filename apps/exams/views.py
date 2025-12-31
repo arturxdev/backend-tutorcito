@@ -17,7 +17,7 @@ class ListExamView(ListAPIView):
         exam = serializer.save()
 
         # In ModelSerializer, the field is 'document' and returns the ID or object
-        document_id = serializer.validated_data["document_id"].id
+        document_id = serializer.validated_data["document"].id
 
         create_exam.delay(
             document_id,

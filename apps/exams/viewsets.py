@@ -9,4 +9,4 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.QuestionSerializer
     queryset = Question.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["exam_id", "difficulty"]
+    filterset_fields = ["exam", "difficulty"]

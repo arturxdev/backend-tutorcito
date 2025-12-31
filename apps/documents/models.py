@@ -11,7 +11,7 @@ class Document(models.Model):
     r2_key = models.TextField(max_length=250)
     hash_md5 = models.TextField(max_length=32)
     num_pages = models.IntegerField()
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -21,10 +21,10 @@ class Document(models.Model):
 class Block(models.Model):
     content = models.TextField()
     page = models.IntegerField(default=1)
-    document_id = models.ForeignKey(
+    document = models.ForeignKey(
         Document, on_delete=models.CASCADE, related_name="blocks"
     )
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blocks")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blocks")
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):

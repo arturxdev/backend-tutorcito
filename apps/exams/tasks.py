@@ -94,7 +94,7 @@ def create_exam(document_id, page_start, page_end, exam_id):
         exam.save()
 
         blocks = Block.objects.filter(
-            document_id=document_id, page__gte=page_start, page__lte=page_end
+            document=document_id, page__gte=page_start, page__lte=page_end
         ).order_by("page")
 
         if not blocks.exists():
@@ -112,7 +112,7 @@ def create_exam(document_id, page_start, page_end, exam_id):
         for p in preguntas_generadas["questions"]:
             questions_to_create.append(
                 Question(
-                    exam_id=exam,
+                    exam=exam,
                     question=p["question"],
                     options=p["options"],
                     difficulty=p["difficulty"],
