@@ -10,6 +10,7 @@ dependencies = [
     "channels-redis>=4.3.0",
     "django>=5.2.9",
     "django-celery-results>=2.6.0",
+    "django-cors-headers>=4.9.0",
     "django-environ>=0.12.0",
     "django-filter>=25.2",
     "django-redis>=6.0.0",

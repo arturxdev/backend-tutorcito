@@ -21,7 +21,7 @@ class Exam(models.Model):
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.document} - {self.user} ({self.status})"
+        return f"{self.document_id} - {self.user_id} ({self.status})"
 
 
 class Question(models.Model):
