@@ -82,7 +82,7 @@ class DocumentUploadView(APIView):
                 num_pages=metadata["num_pages"],
                 user=user,
             )
-            process_pdf.delay(document.id)
+            process_pdf(document.id)
 
             return Response(
                 {

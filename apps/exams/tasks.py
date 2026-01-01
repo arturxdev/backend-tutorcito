@@ -1,7 +1,7 @@
 import logging
 import django
 import os
-from celery import shared_task
+from huey.contrib.djhuey import db_task
 from langchain_core.prompts import ChatPromptTemplate
 from apps.documents.models import Block
 from apps.exams.models import Exam, Question
@@ -81,7 +81,7 @@ class GeneradorExamenes:
             raise e
 
 
-@shared_task
+@db_task()
 def create_exam(document_id, page_start, page_end, exam_id):
     """
     Tarea para generar preguntas de examen usando LangChain y OpenRouter.

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import environ
+from redis import ConnectionPool
+from huey import RedisHuey
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,10 +55,9 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     "drf_spectacular",
     "rest_framework",
-    "channels",
-    "django_celery_results",
     "django_filters",
     "corsheaders",
+    "huey.contrib.djhuey",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -169,45 +170,15 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [env("REDIS_URL")],
-        },
-    },
-}
-
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env("REDIS_URL"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-    },
-}
 
 CHANNELS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "America/Mexico_City"
-CELERY_BROKER_URL = env("REDIS_URL")
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "visibility_timeout": 3600,
-    "socket_keepalive": True,
-    "socket_timeout": 30,
-}
+pool = ConnectionPool(host=env("REDIS_URL"), port=6379, max_connections=20)
+HUEY = RedisHuey("my-app", connection_pool=pool)
 
-CELERY_RESULT_BACKEND = env("REDIS_URL")
-CELERY_CACHE_BACKEND = "default"
-
-CELERY_IMPORTS = ("core.tasks", "apps.documents.tasks", "apps.exams.tasks")
 
 # Supabase Configuration
 SUPABASE_URL = env("SUPABASE_URL", default="")

@@ -76,7 +76,6 @@ name = "backend-tutor"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "celery" },
     { name = "channels" },
     { name = "channels-redis" },
     { name = "django", version = "5.2.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -90,6 +89,7 @@ dependencies = [
     { name = "djangorestframework" },
     { name = "djangorestframework-stubs" },
     { name = "drf-spectacular" },
+    { name = "huey" },
     { name = "langchain" },
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
@@ -97,6 +97,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pydantic" },
     { name = "pypdf" },
+    { name = "redis" },
     { name = "requests" },
     { name = "supabase" },
     { name = "uvicorn" },
@@ -105,7 +106,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "celery", specifier = ">=5.6.1" },
     { name = "channels", specifier = ">=4.3.2" },
     { name = "channels-redis", specifier = ">=4.3.0" },
     { name = "django", specifier = ">=5.2.9" },
@@ -118,6 +118,7 @@ requires-dist = [
     { name = "djangorestframework", specifier = ">=3.16.1" },
     { name = "djangorestframework-stubs", specifier = ">=3.16.6" },
     { name = "drf-spectacular", specifier = ">=0.29.0" },
+    { name = "huey", specifier = ">=2.5.5" },
     { name = "langchain", specifier = ">=1.2.0" },
     { name = "langchain-google-genai", specifier = ">=4.1.2" },
     { name = "langchain-openai", specifier = ">=1.1.6" },
@@ -125,6 +126,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pypdf", specifier = ">=6.5.0" },
+    { name = "redis", specifier = ">=7.1.0" },
     { name = "requests", specifier = ">=2.31.0" },
     { name = "supabase", specifier = ">=2.27.0" },
     { name = "uvicorn", specifier = ">=0.40.0" },
@@ -831,6 +833,15 @@ wheels = [
 [package.optional-dependencies]
 http2 = [
     { name = "h2" },
+]
+
+[[package]]
+name = "huey"
+version = "2.5.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/87/07796060836baf60727df5edae1579adcc8140f42fb7dea3c34ca7ce7fd3/huey-2.5.5.tar.gz", hash = "sha256:a39010628a9a1a9e91462f9bf33dc243b006a9f21193026ea47ae18949a12581", size = 895915, upload-time = "2025-12-05T02:26:54.226Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/c2/0543039071259cfdab525757022de8dad6d22c15a0e7352f1a50a1444a13/huey-2.5.5-py3-none-any.whl", hash = "sha256:82ac73343248c5d7acec04814f952c61f7793e11fd99d26ed9030137d32f912c", size = 76889, upload-time = "2025-12-05T02:26:52.668Z" },
 ]
 
 [[package]]

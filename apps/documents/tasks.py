@@ -1,6 +1,6 @@
 import io
 import logging
-from celery import shared_task
+from huey.contrib.djhuey import db_task
 from pypdf import PdfReader
 from apps.documents.models import Document, Block
 from apps.documents.utils import SupabaseStorage
@@ -8,11 +8,12 @@ from apps.documents.utils import SupabaseStorage
 logger = logging.getLogger(__name__)
 
 
-@shared_task
+@db_task()
 def process_pdf(document_id):
     """
     Task to extract text from a PDF document and save it as Blocks.
     """
+    print("Starting PDF text extraction for document: %s", document_id)
     logger.info("Starting PDF text extraction for document: %s", document_id)
     try:
         # 1. Fetch document from database

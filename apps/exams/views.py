@@ -19,7 +19,7 @@ class ListExamView(ListAPIView):
         # In ModelSerializer, the field is 'document' and returns the ID or object
         document_id = serializer.validated_data["document"].id
 
-        create_exam.delay(
+        create_exam(
             document_id,
             exam.page_start,
             exam.page_end,

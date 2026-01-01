@@ -18,7 +18,7 @@ services:
     celery_worker:
         container_name: celery_worker
         build: .
-        command: celery -A core worker --loglevel=info
+        command: uv run python manage.py run_huey
         volumes:
             - .:/app
             - /app/.venv
