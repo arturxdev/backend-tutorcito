@@ -176,8 +176,13 @@ CHANNELS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-pool = ConnectionPool(host=env("REDIS_URL"), port=6379, max_connections=20)
-HUEY = RedisHuey("my-app", connection_pool=pool)
+pool = ConnectionPool.from_url(
+    env("REDIS_URL"),
+    decode_responses=False,
+    socket_timeout=5,
+    retry_on_timeout=True,
+)
+HUEY = RedisHuey("tutorcito_prod", connection_pool=pool)
 
 
 # Supabase Configuration
