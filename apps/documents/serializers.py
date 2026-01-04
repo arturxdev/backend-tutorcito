@@ -17,4 +17,3 @@ class BlockSerializer(serializers.ModelSerializer):
 
 class DocumentUploadSerializer(serializers.Serializer):
     file = serializers.FileField(required=True)
-    user_id = serializers.IntegerField(required=True)

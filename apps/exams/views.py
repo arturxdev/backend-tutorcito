@@ -1,4 +1,5 @@
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from apps.exams.models import Exam
 from apps.exams import serializers
 from rest_framework.response import Response
@@ -9,12 +10,17 @@ from apps.exams.tasks import create_exam
 class ListExamView(ListAPIView):
     allowed_methods = ["GET", "POST"]
     serializer_class = serializers.ExamSerializer
-    queryset = Exam.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Solo exámenes del usuario autenticado"""
+        return Exam.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
         serializer = serializers.ExamSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        exam = serializer.save()
+        # Auto-asignar usuario autenticado
+        exam = serializer.save(user=request.user)
 
         # In ModelSerializer, the field is 'document' and returns the ID or object
         document_id = serializer.validated_data["document"].id
@@ -31,4 +37,8 @@ class ListExamView(ListAPIView):
 class DetailExamView(RetrieveUpdateDestroyAPIView):
     allowed_methods = ["GET", "PUT", "DELETE"]
     serializer_class = serializers.ExamSerializer
-    queryset = Exam.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Solo exámenes del usuario autenticado"""
+        return Exam.objects.filter(user=self.request.user)

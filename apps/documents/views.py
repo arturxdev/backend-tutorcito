@@ -1,14 +1,13 @@
 import uuid
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from drf_spectacular.utils import extend_schema
 from apps.documents.models import Document
 from apps.documents import serializers
 from apps.documents.utils import SupabaseStorage, get_pdf_metadata
 from apps.documents.tasks import process_pdf
-from apps.users.models import User
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
         request={
@@ -31,16 +31,7 @@ class DocumentUploadView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         file_obj = serializer.validated_data["file"]
-
-        user_id = serializer.validated_data["user_id"]
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            # Opción A: Error de validación (400 Bad Request)
-            return Response(
-                {"user_id": "El usuario con este ID no existe."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        user = request.user
 
         # 1. Validation (already partially done by serializer, but keeping explicit checks)
         if file_obj.size > 50 * 1024 * 1024:

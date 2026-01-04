@@ -22,17 +22,19 @@ from rest_framework.routers import DefaultRouter
 from apps.documents.viewsets import DocumentViewSet
 from apps.documents.views import DocumentUploadView
 from apps.users.viewsets import UserViewSet
+from apps.users.views import get_current_user
 from django.conf.urls.static import static
 from django.conf import settings
 
 router = DefaultRouter()
 router.register("users", UserViewSet)
-router.register("documents", DocumentViewSet)
+router.register("documents", DocumentViewSet, basename="document")
 
 urlpatterns = (
     [
         path("admin/", admin.site.urls),
         path("", include("apps.docs.urls")),
+        path("api/auth/me/", get_current_user, name="current-user"),
         path("api/", include("apps.exams.urls")),
         path(
             "api/documents/upload/",

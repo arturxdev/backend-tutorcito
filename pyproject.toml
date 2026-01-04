@@ -25,6 +25,7 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.5",
     "pypdf>=6.5.0",
+    "python-jose[cryptography]>=3.3.0",
     "redis>=7.1.0",
     "requests>=2.31.0",
     "supabase>=2.27.0",

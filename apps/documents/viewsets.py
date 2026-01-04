@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, permissions
 from apps.documents.models import Document
 from apps.documents import serializers
 
@@ -16,4 +16,8 @@ class DocumentViewSet(
     """
 
     serializer_class = serializers.DocumentSerializer
-    queryset = Document.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """Solo documentos del usuario autenticado"""
+        return Document.objects.filter(user=self.request.user)

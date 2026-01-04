@@ -168,6 +168,10 @@ REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "apps.users.authentication.SupabaseJWTAuthentication",
+    ],
+    # NO ponemos IsAuthenticated global, lo agregamos por endpoint
 }
 
 
@@ -189,6 +193,7 @@ HUEY = RedisHuey("tutorcito_prod", connection_pool=pool)
 SUPABASE_URL = env("SUPABASE_URL", default="")
 SUPABASE_KEY = env("SUPABASE_KEY", default="")
 SUPABASE_BUCKET_NAME = env("SUPABASE_BUCKET_NAME", default="documents")
+SUPABASE_PROJECT_URL = env("NEXT_PUBLIC_SUPABASE_URL", default="")
 
 # OpenAI Configuration
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
