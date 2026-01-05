@@ -104,6 +104,7 @@ def create_exam(document_id, page_start, page_end, exam_id):
             raise Exception("No content found for the selected pages")
 
         base_text = "\n\n".join([f"Página {b.page}: {b.content}" for b in blocks])
+        print(base_text)
         generador = GeneradorExamenes()
         preguntas_generadas = generador.generate(
             base_text=base_text, total_questions=exam.num_questions

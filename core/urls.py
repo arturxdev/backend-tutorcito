@@ -30,19 +30,15 @@ router = DefaultRouter()
 router.register("users", UserViewSet)
 router.register("documents", DocumentViewSet, basename="document")
 
-urlpatterns = (
-    [
-        path("admin/", admin.site.urls),
-        path("", include("apps.docs.urls")),
-        path("api/auth/me/", get_current_user, name="current-user"),
-        path("api/", include("apps.exams.urls")),
-        path(
-            "api/documents/upload/",
-            DocumentUploadView.as_view(),
-            name="document-upload",
-        ),
-        path("api/", include(router.urls)),
-    ]
-    + router.urls
-    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-)
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("apps.docs.urls")),
+    path("api/auth/me/", get_current_user, name="current-user"),
+    path("api/", include("apps.exams.urls")),
+    path(
+        "api/documents/upload/",
+        DocumentUploadView.as_view(),
+        name="document-upload",
+    ),
+    path("api/", include(router.urls)),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

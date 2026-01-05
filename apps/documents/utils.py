@@ -2,45 +2,75 @@ import hashlib
 from typing import Dict, Any
 from io import BytesIO
 from django.conf import settings
-from supabase import create_client, Client
+import boto3
+from botocore.client import Config
 from pypdf import PdfReader
 
 
-class SupabaseStorage:
-    def __init__(self):
-        self.url = settings.SUPABASE_URL
-        self.key = settings.SUPABASE_KEY
-        self.bucket_name = settings.SUPABASE_BUCKET_NAME
+class R2Storage:
+    """
+    Cloudflare R2 Storage client using S3-compatible API
+    """
 
-        if not all([self.url, self.key, self.bucket_name]):
+    def __init__(self):
+        self.account_id = settings.R2_ACCOUNT_ID
+        self.access_key_id = settings.R2_ACCESS_KEY_ID
+        self.secret_access_key = settings.R2_SECRET_ACCESS_KEY
+        self.bucket_name = settings.R2_BUCKET_NAME
+        self.public_url = settings.R2_PUBLIC_URL  # Public R2.dev URL or custom domain
+
+        if not all(
+            [
+                self.account_id,
+                self.access_key_id,
+                self.secret_access_key,
+                self.bucket_name,
+            ]
+        ):
             raise ValueError(
-                "Supabase configuration is incomplete. Check SUPABASE_URL, SUPABASE_KEY, and SUPABASE_BUCKET_NAME."
+                "R2 configuration is incomplete. Check R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, "
+                "R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME."
             )
 
-        self.client: Client = create_client(self.url, self.key)
+        # Create S3 client configured for R2
+        self.client = boto3.client(
+            "s3",
+            endpoint_url=f"https://{self.account_id}.r2.cloudflarestorage.com",
+            aws_access_key_id=self.access_key_id,
+            aws_secret_access_key=self.secret_access_key,
+            config=Config(signature_version="s3v4"),
+            region_name="auto",
+        )
 
     def upload_file(
         self, file_content: bytes, file_name: str, content_type: str
     ) -> str:
         """
-        Uploads a file to Supabase Storage and returns the public URL.
+        Uploads a file to R2 Storage and returns the public URL.
         """
-        path = f"documents/{file_name}"
+        path = f"pdfs/{file_name}"
 
-        # Upload using the storage client
-        self.client.storage.from_(self.bucket_name).upload(
-            path=path, file=file_content, file_options={"content-type": content_type}
+        # Upload to R2
+        self.client.put_object(
+            Bucket=self.bucket_name,
+            Key=path,
+            Body=file_content,
+            ContentType=content_type,
         )
 
-        # Check if we should use public URL or a signed one.
-        # Assuming public for now if the bucket is public.
-        return self.client.storage.from_(self.bucket_name).get_public_url(path)
+        # Return public URL
+        if self.public_url:
+            return f"{self.public_url}/{path}"
+        else:
+            # Fallback to R2.dev URL
+            return f"https://{self.bucket_name}.{self.account_id}.r2.cloudflarestorage.com/{path}"
 
     def download_file(self, path: str) -> bytes:
         """
-        Downloads a file from Supabase Storage.
+        Downloads a file from R2 Storage.
         """
-        return self.client.storage.from_(self.bucket_name).download(path)
+        response = self.client.get_object(Bucket=self.bucket_name, Key=path)
+        return response["Body"].read()
 
 
 def get_pdf_metadata(file_content: bytes) -> Dict[str, Any]:

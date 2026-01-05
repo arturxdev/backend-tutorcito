@@ -3,6 +3,8 @@ services:
         container_name: django
         build: .
         command: uvicorn core.asgi:application --host 0.0.0.0 --port 8000 --reload
+        env_file:
+            - ./core/.env
         volumes:
             - .:/app
             - /app/.venv
@@ -19,6 +21,8 @@ services:
         container_name: celery_worker
         build: .
         command: uv run python manage.py run_huey
+        env_file:
+            - ./core/.env
         volumes:
             - .:/app
             - /app/.venv

@@ -19,7 +19,7 @@ from huey import RedisHuey
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, "core", ".env"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -169,7 +169,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "apps.users.authentication.SupabaseJWTAuthentication",
+        "apps.users.authentication.ClerkJWTAuthentication",
     ],
     # NO ponemos IsAuthenticated global, lo agregamos por endpoint
 }
@@ -189,11 +189,22 @@ pool = ConnectionPool.from_url(
 HUEY = RedisHuey("tutorcito_prod", connection_pool=pool)
 
 
-# Supabase Configuration
-SUPABASE_URL = env("SUPABASE_URL", default="")
-SUPABASE_KEY = env("SUPABASE_KEY", default="")
-SUPABASE_BUCKET_NAME = env("SUPABASE_BUCKET_NAME", default="documents")
-SUPABASE_PROJECT_URL = env("NEXT_PUBLIC_SUPABASE_URL", default="")
+# Clerk Configuration
+CLERK_SECRET_KEY = env("CLERK_SECRET_KEY", default="")
+CLERK_PUBLISHABLE_KEY = env("CLERK_PUBLISHABLE_KEY", default="")
+CLERK_JWKS_URL = env("CLERK_JWKS_URL", default="")
+
+# Cloudflare R2 Configuration
+R2_ACCOUNT_ID = env("R2_ACCOUNT_ID", default="")
+R2_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID", default="")
+R2_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY", default="")
+R2_BUCKET_NAME = env("R2_BUCKET_NAME", default="pdfs")
+R2_PUBLIC_URL = env(
+    "R2_PUBLIC_URL", default=""
+)  # Optional: Custom domain or R2.dev URL
 
 # OpenAI Configuration
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+
+# Groq Configuration
+GROQ_API_KEY = env("GROQ_API_KEY", default="")

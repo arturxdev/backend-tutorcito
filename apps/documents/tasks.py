@@ -3,7 +3,7 @@ import logging
 from huey.contrib.djhuey import db_task
 from pypdf import PdfReader
 from apps.documents.models import Document, Block
-from apps.documents.utils import SupabaseStorage
+from apps.documents.utils import R2Storage
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +23,8 @@ def process_pdf(document_id):
             logger.error("Document not found: %s", document_id)
             return {"status": "error", "message": "Document not found"}
 
-        # 2. Download file from Supabase
-        storage = SupabaseStorage()
+        # 2. Download file from R2
+        storage = R2Storage()
         # Use the r2_key which contains the path in the bucket
         pdf_data = storage.download_file(document.r2_key)
 
