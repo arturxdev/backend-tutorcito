@@ -9,7 +9,7 @@ class Exam(models.Model):
     page_start = models.IntegerField()
     page_end = models.IntegerField()
     num_questions = models.IntegerField(default=10)
-    result = models.IntegerField()
+    result = models.IntegerField(null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
