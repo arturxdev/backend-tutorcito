@@ -15,11 +15,21 @@ import os
 import environ
 from redis import ConnectionPool
 from huey import RedisHuey
+import sentry_sdk
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, "core", ".env"))
+SENTRY_DSN = env("SENTRY_DSN", default="")
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn="https://433dcafbd8992880d91d275c84c1b5c5@o4510711342170112.ingest.us.sentry.io/4510711493951488",
+        send_default_pii=True,
+        traces_sample_rate=1.0,
+        enable_logs=True,
+    )
 
 
 # Quick-start development settings - unsuitable for production
@@ -208,3 +218,40 @@ OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 
 # Groq Configuration
 GROQ_API_KEY = env("GROQ_API_KEY", default="")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

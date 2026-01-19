@@ -4,7 +4,6 @@ import jwt
 from jwt import PyJWKClient
 from jwt.exceptions import InvalidTokenError
 from django.conf import settings
-from django.core.cache import cache
 from apps.users.models import User
 import logging
 
@@ -17,9 +16,6 @@ class ClerkJWTAuthentication(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        logger.info("=" * 60)
-        logger.info("🔐 [AUTH] Starting Clerk JWT authentication")
-
         auth_header = request.META.get("HTTP_AUTHORIZATION", "")
         logger.info(f"🔐 [AUTH] Auth header present: {bool(auth_header)}")
 
@@ -39,6 +35,7 @@ class ClerkJWTAuthentication(BaseAuthentication):
             jwks_client = PyJWKClient(jwks_url, cache_keys=True)
 
             logger.info("🔐 [AUTH] Getting signing key from JWKS...")
+            print(token)
             signing_key = jwks_client.get_signing_key_from_jwt(token)
             logger.info(f"✅ [AUTH] Signing key obtained: {signing_key.key_id}")
 
@@ -86,7 +83,6 @@ class ClerkJWTAuthentication(BaseAuthentication):
                 user.save(update_fields=["email", "updated_at"])
 
             logger.info(f"✅ [AUTH] Authentication complete for user ID: {user.id}")
-            logger.info("=" * 60)
             return (user, token)
 
         except InvalidTokenError as e:
@@ -99,7 +95,6 @@ class ClerkJWTAuthentication(BaseAuthentication):
             logger.error("❌ [AUTH] Unexpected error during authentication")
             logger.error(f"❌ [AUTH] Error type: {type(e).__name__}")
             logger.error(f"❌ [AUTH] Error message: {str(e)}")
-            logger.info("=" * 60)
             raise AuthenticationFailed("Error de autenticación")
 
 

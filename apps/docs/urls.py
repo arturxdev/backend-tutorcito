@@ -5,6 +5,8 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from .views import LLMsTextView
+
 
 urlpatterns = [
     # YOUR PATTERNS
@@ -19,4 +21,5 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("llms.txt", LLMsTextView.as_view(), name="llms-txt"),
 ]

@@ -25,10 +25,17 @@ from apps.users.viewsets import UserViewSet
 from apps.users.views import get_current_user
 from django.conf.urls.static import static
 from django.conf import settings
+from sentry_sdk import logger as sentry_logger
 
 router = DefaultRouter()
 router.register("users", UserViewSet)
 router.register("documents", DocumentViewSet, basename="document")
+
+
+def test(request):
+    sentry_logger.error("Updated global cache=======")
+    division = 1 / 0
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -40,5 +47,6 @@ urlpatterns = [
         DocumentUploadView.as_view(),
         name="document-upload",
     ),
+    path("test/", test),
     path("api/", include(router.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
